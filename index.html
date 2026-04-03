@@ -572,6 +572,86 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ─── AUTHOR CARD ─── */
+  .author-card {
+    margin-top: 32px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 48px 40px;
+    backdrop-filter: blur(24px);
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  @media (max-width: 700px) {
+    .author-card { flex-direction: column; text-align: center; padding: 36px 24px; gap: 32px; }
+    .author-card .author-text { align-items: center; }
+  }
+  .author-avatar {
+    flex-shrink: 0;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--glass-border);
+    box-shadow: 0 0 40px var(--claw-glow);
+  }
+  .author-text {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .author-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .author-heading {
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .author-heading span {
+    background: linear-gradient(135deg, #FF6B2B 0%, #FF9A5C 50%, #FFBE8A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .author-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 460px;
+  }
+  .author-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #0077B5, #0A66C2);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,119,181,0.35);
+    width: fit-content;
+  }
+  .author-cta:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,119,181,0.45);
+  }
+  .author-cta svg { flex-shrink: 0; }
+
   /* ─── CHECKLIST ─── */
   .check-list { list-style: none; }
   .check-item {
@@ -1083,6 +1163,21 @@
 
     </div><!-- /steps-content -->
   </div><!-- /main-grid -->
+
+  <!-- AUTHOR CARD -->
+  <div class="author-card">
+    <img class="author-avatar" src="Avatar.png" alt="Pietro">
+    <div class="author-text">
+      <p class="author-label">Made by a human</p>
+      <div class="author-heading">If this saved you time,<br>say <span>hi on LinkedIn.</span></div>
+      <p class="author-sub">I built this guide so you don't have to dig through docs. If it made your life easier, a follow or a like means a lot — it helps me keep building things like this.</p>
+      <a class="author-cta" href="https://www.linkedin.com/in/pietro-works" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Follow on LinkedIn
+      </a>
+    </div>
+  </div>
+
 </div><!-- /container -->
 
 <script>
