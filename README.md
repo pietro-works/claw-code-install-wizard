@@ -2,6 +2,8 @@
 
 Interactive installation guide for Claw Code — a harness layer for Claude Code.
 
+Access the Install Wizard here: https://pietro-works.github.io/claw-code-install-wizard/
+
 ## What's this?
 
 A single-page interactive setup guide that walks developers through installing Claw Code in 4 steps. Supports Mac, Linux, and Windows. Choose your build track — Rust or Python.
