@@ -207,7 +207,7 @@
     display: flex; align-items: center; gap: 12px;
     padding: 10px 12px;
     border-radius: var(--radius-sm);
-    border: 1px solid transparent; /* stable baseline — prevents layout shift when active border appears */
+    border: 1px solid transparent;
     cursor: pointer;
     transition: all 0.2s;
     color: var(--text-secondary);
@@ -401,13 +401,11 @@
   }
   .copy-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.2); background: var(--glass-hover); }
   .copy-btn.copied { color: var(--step-done); border-color: rgba(34,197,94,0.3); }
-  /* base — applies to ALL code elements */
   code {
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     color: #e2d9c5;
   }
-  /* block code inside a .code-block container */
   .code-block code {
     display: block;
     padding: 16px;
@@ -416,7 +414,6 @@
     overflow-x: auto;
     white-space: pre;
   }
-  /* inline code inside prose (info-boxes, checklists, paragraphs) */
   p code, li code, .check-item code {
     display: inline;
     font-size: 12px;
@@ -715,28 +712,36 @@
     #themeToggle { bottom: 20px; right: 16px; width: 46px; height: 46px; font-size: 19px; }
   }
 
-  /* ─── THEME TRANSITION MASK ─── */
+  /* ─── VIEW TRANSITIONS — circular reveal ───────────────────────────────
+     The browser snapshots the old render as ::view-transition-old(root)
+     and the new render as ::view-transition-new(root).
+     We kill the default cross-fade and let JS animate clip-path on the
+     new layer, expanding it from the button centre outward.
+  ──────────────────────────────────────────────────────────────────────── */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;      /* we drive the animation entirely from JS */
+    mix-blend-mode: normal;
+  }
+
+  /* ─── FALLBACK MASK (Firefox / older browsers without View Transitions) ─── */
   #themeMask {
     position: fixed; inset: 0;
     z-index: 9998;
     pointer-events: none;
-    clip-path: circle(0px at center center); /* typed initial state — prevents none→circle() type mismatch */
+    clip-path: circle(0px at center center);
     will-change: clip-path;
   }
 
   /* ══════════════════════════════════════════
      LIGHT MODE OVERRIDES
-     All selectors prefixed html[data-theme="light"]
-     Dark mode remains completely untouched.
   ══════════════════════════════════════════ */
-
-  /* Variables */
   html[data-theme="light"] {
     --claw: #0EA5E9;
     --claw-glow: rgba(14,165,233,0.30);
     --claw-dim: rgba(14,165,233,0.10);
-    --glass-bg: rgba(255,255,255,0.68);       /* was 0.55 — boosted for card visibility on pastel bg */
-    --glass-border: rgba(14,165,233,0.28);    /* was 0.20 — more visible border */
+    --glass-bg: rgba(255,255,255,0.68);
+    --glass-border: rgba(14,165,233,0.28);
     --glass-hover: rgba(255,255,255,0.85);
     --text-primary: #0C1A2E;
     --text-secondary: rgba(12,26,46,0.65);
@@ -748,15 +753,13 @@
     --bg-deep: #EFF8FF;
   }
 
-  /* Body background — background-attachment:fixed is broken on iOS Safari, use scroll */
   html[data-theme="light"] body {
     background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 25%, #93C5FD 50%, #C4B5FD 75%, #F9A8D4 100%);
-    background-attachment: scroll; /* fixed breaks backdrop-filter + iOS Safari rendering */
+    background-attachment: scroll;
     background-size: cover;
     background-repeat: no-repeat;
   }
 
-  /* Aurora blobs */
   html[data-theme="light"] .aurora::before {
     background: radial-gradient(ellipse at center, rgba(236,72,153,0.18) 0%, transparent 70%);
   }
@@ -766,18 +769,12 @@
   html[data-theme="light"] .aurora-mid {
     background: radial-gradient(ellipse at center, rgba(14,165,233,0.12) 0%, transparent 70%);
   }
-
-  /* Grid lines */
   html[data-theme="light"] .grid-lines {
     background-image:
       linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
       linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px);
   }
-
-  /* Scrollbar */
   html[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(14,165,233,0.25); }
-
-  /* H1 gradient */
   html[data-theme="light"] h1 .claw-word {
     background: linear-gradient(135deg, #0EA5E9 0%, #A855F7 50%, #EC4899 100%);
     -webkit-background-clip: text;
@@ -785,18 +782,11 @@
     background-clip: text;
     filter: drop-shadow(0 0 30px rgba(14,165,233,0.35));
   }
-
-  /* Nav active border */
   html[data-theme="light"] .nav-step.active { border-color: rgba(14,165,233,0.28); }
-
-  /* OS button active */
   html[data-theme="light"] .os-btn.active { border-color: rgba(14,165,233,0.42); }
-
-  /* Step card shimmer line */
   html[data-theme="light"] .step-card::before {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.70), transparent);
   }
-  /* Active step card */
   html[data-theme="light"] .step-card.active-card {
     border-color: rgba(14,165,233,0.35);
     background: rgba(14,165,233,0.05);
@@ -804,7 +794,6 @@
   html[data-theme="light"] .step-card.active-card::before {
     background: linear-gradient(90deg, transparent, rgba(14,165,233,0.45), transparent);
   }
-  /* Done step card */
   html[data-theme="light"] .step-card.done-card {
     border-color: rgba(22,163,74,0.25);
     background: rgba(22,163,74,0.04);
@@ -812,26 +801,18 @@
   html[data-theme="light"] .step-card.done-card::before {
     background: linear-gradient(90deg, transparent, rgba(22,163,74,0.35), transparent);
   }
-
-  /* Step badge/label states */
   html[data-theme="light"] .active-card .step-badge { box-shadow: 0 0 16px rgba(14,165,233,0.30); }
   html[data-theme="light"] .active-card .step-label { color: rgba(14,165,233,0.80); }
   html[data-theme="light"] .done-card .step-label { color: rgba(22,163,74,0.70); }
-
-  /* Code block */
   html[data-theme="light"] code { color: #1E3A5F; }
   html[data-theme="light"] .code-block code { color: #1E3A5F; }
   html[data-theme="light"] .code-header { background: rgba(14,165,233,0.07); }
   html[data-theme="light"] .copy-btn:hover { border-color: rgba(14,165,233,0.30); }
-
-  /* Syntax tokens */
   html[data-theme="light"] .token-cmd    { color: #0284C7; }
   html[data-theme="light"] .token-flag   { color: #0369A1; }
   html[data-theme="light"] .token-string { color: #16A34A; }
   html[data-theme="light"] .token-comment{ color: rgba(12,26,46,0.38); }
   html[data-theme="light"] .token-path   { color: #7C3AED; }
-
-  /* Inline code */
   html[data-theme="light"] p code,
   html[data-theme="light"] li code,
   html[data-theme="light"] .check-item code {
@@ -839,14 +820,10 @@
     color: #0369A1;
     border-color: rgba(14,165,233,0.22);
   }
-
-  /* Info boxes */
   html[data-theme="light"] .info-box.tip     { background: rgba(14,165,233,0.06); border-color: rgba(14,165,233,0.22); }
   html[data-theme="light"] .info-box.warning { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.22); }
   html[data-theme="light"] .info-box.success { background: rgba(22,163,74,0.06);  border-color: rgba(22,163,74,0.22);  }
   html[data-theme="light"] .info-box a { color: #0284C7; }
-
-  /* Track cards */
   html[data-theme="light"] .track-card.selected-rust   { border-color: rgba(14,165,233,0.50); }
   html[data-theme="light"] .track-card.selected-python { border-color: rgba(236,72,153,0.50); background: rgba(236,72,153,0.07); }
   html[data-theme="light"] .track-badge.recommended    { border-color: rgba(14,165,233,0.30); }
@@ -855,14 +832,10 @@
     background: rgba(236,72,153,0.10);
     border-color: rgba(236,72,153,0.25);
   }
-
-  /* Progress bar */
   html[data-theme="light"] .progress-fill {
     background: linear-gradient(90deg, #0EA5E9, #EC4899);
     box-shadow: 0 0 8px rgba(14,165,233,0.30);
   }
-
-  /* Primary action button — pink/purple */
   html[data-theme="light"] .btn-done {
     background: linear-gradient(135deg, #EC4899, #A855F7);
     box-shadow: 0 4px 20px rgba(236,72,153,0.30);
@@ -872,8 +845,6 @@
     background: linear-gradient(135deg, #16A34A, #4ADE80);
     box-shadow: 0 4px 20px rgba(22,163,74,0.25);
   }
-
-  /* Final card */
   html[data-theme="light"] .final-card {
     background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(236,72,153,0.05));
     border-color: rgba(14,165,233,0.28);
@@ -887,8 +858,6 @@
     box-shadow: 0 4px 20px rgba(236,72,153,0.30);
   }
   html[data-theme="light"] .final-link.primary:hover { box-shadow: 0 6px 28px rgba(236,72,153,0.50); }
-
-  /* Author card */
   html[data-theme="light"] .author-avatar { box-shadow: 0 0 40px rgba(14,165,233,0.35); }
   html[data-theme="light"] .author-heading span {
     background: linear-gradient(135deg, #0EA5E9 0%, #A855F7 50%, #EC4899 100%);
@@ -986,7 +955,6 @@
 
         <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">For Rust track (recommended)</p>
 
-        <!-- macOS / Linux -->
         <div data-os="mac linux">
           <div class="code-block">
             <div class="code-header">
@@ -1017,7 +985,6 @@
           </div>
         </div>
 
-        <!-- Windows -->
         <div data-os="win" style="display:none">
           <div class="info-box tip" style="margin-bottom:10px;">
             <span class="icon">🪟</span>
@@ -1229,7 +1196,6 @@
         </div>
         <p class="step-description">Build the Rust workspace or set up the Python environment depending on your chosen track.</p>
 
-        <!-- RUST -->
         <div id="buildRust">
           <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--claw);opacity:0.8;margin-bottom:10px;">🦀 Rust Track</p>
           <div class="code-block">
@@ -1260,7 +1226,6 @@
           </div>
         </div>
 
-        <!-- PYTHON -->
         <div id="buildPython" style="display:none;">
           <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82aaff;opacity:0.8;margin-bottom:10px;">🐍 Python Track</p>
           <div class="code-block">
@@ -1300,7 +1265,6 @@
         </div>
         <p class="step-description">Fire up Claw Code and verify everything is working. Below are all the commands you'll use regularly.</p>
 
-        <!-- RUST RUN -->
         <div id="runRust">
           <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--claw);opacity:0.8;margin-bottom:10px;">🦀 Rust — Run the binary</p>
           <div class="code-block">
@@ -1321,7 +1285,6 @@
           </div>
         </div>
 
-        <!-- PYTHON RUN -->
         <div id="runPython" style="display:none;">
           <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82aaff;opacity:0.8;margin-bottom:10px;">🐍 Python — Core commands</p>
           <div class="code-block">
@@ -1417,16 +1380,12 @@
     currentOS = os;
     document.querySelectorAll('.os-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // Show/hide all elements with data-os attribute
     document.querySelectorAll('[data-os]').forEach(el => {
       const oses = el.getAttribute('data-os').split(' ');
       el.style.display = oses.includes(os) ? '' : 'none';
     });
   }
 
-  // Initialize OS display immediately — script runs at end of body so DOM is ready.
-  // data-os="win" elements already have style="display:none" in HTML as safe default;
-  // this pass ensures mac/linux elements are explicitly shown too.
   document.querySelectorAll('[data-os]').forEach(el => {
     const oses = el.getAttribute('data-os').split(' ');
     el.style.display = oses.includes('mac') ? '' : 'none';
@@ -1467,7 +1426,7 @@
         window.scrollTo({ top: y, behavior: 'smooth' });
       }, 150);
     } else {
-      setNavActive(-1); // all done
+      setNavActive(-1);
       document.getElementById('finalCard').classList.add('visible');
       setTimeout(() => {
         document.getElementById('finalCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1475,9 +1434,7 @@
     }
   }
 
-  /* ── UNIFIED NAV STATE ── */
-  // Single source of truth for sidebar highlighting.
-  // Pass -1 when all steps are complete.
+  /* ── NAV STATE ── */
   function setNavActive(activeIdx) {
     document.querySelectorAll('.nav-step').forEach((item, i) => {
       const num = item.querySelector('.step-num');
@@ -1501,20 +1458,16 @@
     document.getElementById('progressLabel').textContent = count + ' / ' + totalSteps;
   }
 
-  /* ── SCROLL TO STEP (sidebar click) ── */
+  /* ── SCROLL TO STEP ── */
   function scrollToStep(index) {
     const card = document.getElementById('step-' + index);
     const y = card.getBoundingClientRect().top + window.pageYOffset - 32;
     window.scrollTo({ top: y, behavior: 'smooth' });
-    // Update nav immediately on click — don't wait for observer
     if (!completedSteps.has(index)) setNavActive(index);
   }
 
   /* ── INTERSECTION OBSERVER ── */
-  // rootMargin '-10% 0px -55% 0px' = a step becomes active when
-  // its top enters the upper 45% of the viewport.
   const observer = new IntersectionObserver((entries) => {
-    // Find the most prominent intersecting entry
     let best = null;
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -1547,74 +1500,107 @@
     if (mid) mid.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
   });
 
-  /* ── THEME TOGGLE (Telegram-style circular mask reveal) ── */
+  /* ════════════════════════════════════════════════════════════════════════
+     THEME TOGGLE — circular reveal via View Transitions API
+     ────────────────────────────────────────────────────────────────────────
+     HOW IT WORKS (View Transitions path):
+       1. document.startViewTransition() snapshots the current render as
+          ::view-transition-old(root) — the full live page, frozen.
+       2. The callback runs synchronously: we flip data-theme on <html>
+          so the browser paints the NEW theme beneath the snapshot.
+       3. ::view-transition-new(root) holds that new render.
+       4. We kill both layers' default cross-fade (CSS: animation: none)
+          and instead animate ONLY the new layer's clip-path, expanding a
+          circle from the button centre outward — revealing the new theme.
+       5. The old snapshot sits underneath the new layer untouched, so the
+          user sees the full previous page until the circle sweeps over it.
 
-  // Guard: prevent re-triggering while animation is running
+     FALLBACK (Firefox / browsers without View Transitions):
+       We apply the theme immediately, then expand a coloured #themeMask
+       div (matching the new theme's bg) over the page. Not a true render
+       capture, but gives a convincing enough effect.
+  ════════════════════════════════════════════════════════════════════════ */
   let _themeAnimating = false;
 
   function toggleTheme() {
     if (_themeAnimating) return;
     _themeAnimating = true;
 
-    const html = document.documentElement;
-    const btn  = document.getElementById('themeToggle');
-    const mask = document.getElementById('themeMask');
+    const btn     = document.getElementById('themeToggle');
+    const mask    = document.getElementById('themeMask');
+    const html    = document.documentElement;
     const isLight = html.dataset.theme === 'light';
 
-    // Origin: centre of the toggle button
+    // Compute origin: centre of the toggle button
     const rect = btn.getBoundingClientRect();
-    const ox = rect.left + rect.width  / 2;
-    const oy = rect.top  + rect.height / 2;
-
-    // Precise max radius — the farthest screen corner from the button centre.
-    // More reliable than "200vmax" on mobile, and avoids giant GPU allocation.
+    const ox   = Math.round(rect.left + rect.width  / 2);
+    const oy   = Math.round(rect.top  + rect.height / 2);
+    // Radius that covers the farthest screen corner from the button
     const maxR = Math.hypot(
       Math.max(ox, window.innerWidth  - ox),
       Math.max(oy, window.innerHeight - oy)
-    ) + 4; // +4px safety margin so corners are always covered
+    ) + 4;
 
-    // Paint mask with the OUTGOING theme's background so it covers the current page
-    mask.style.background = isLight
-      ? 'linear-gradient(135deg,#BAE6FD 0%,#7DD3FC 25%,#93C5FD 50%,#C4B5FD 75%,#F9A8D4 100%)'
-      : '#080A10';
-
-    // Switch the theme NOW — the new theme renders on the page BENEATH the mask
-    if (isLight) {
-      delete html.dataset.theme;
-      btn.textContent = '🌙';
-    } else {
-      html.dataset.theme = 'light';
-      btn.textContent = '☀️';
+    function applyTheme() {
+      if (isLight) {
+        delete html.dataset.theme;
+        btn.textContent = '🌙';
+      } else {
+        html.dataset.theme = 'light';
+        btn.textContent = '☀️';
+      }
     }
 
-    // --- WAAPI instead of the offsetHeight + CSS transition hack ---
-    // We explicitly declare BOTH keyframes (from and to), so the browser
-    // never needs to read the current computed clip-path state.
-    // This is the only approach that works reliably on iOS Safari & Android Chrome.
+    /* ── PATH A: View Transitions API (Chrome 111+, Safari 18+) ── */
+    if (document.startViewTransition) {
+      // startViewTransition snapshots current page, calls applyTheme(),
+      // then exposes ::view-transition-new(root) with the new render.
+      const transition = document.startViewTransition(applyTheme);
+
+      transition.ready.then(() => {
+        // Animate the NEW theme layer expanding from button centre.
+        // The OLD snapshot remains static below until the circle covers it.
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${ox}px ${oy}px)`,
+              `circle(${maxR}px at ${ox}px ${oy}px)`
+            ]
+          },
+          {
+            duration: 600,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
+      });
+
+      transition.finished.finally(() => { _themeAnimating = false; });
+      return;
+    }
+
+    /* ── PATH B: WAAPI mask fallback (Firefox, older browsers) ── */
+    // Apply theme first so the page underneath is already correct.
+    applyTheme();
+    // Paint the mask with the NEW theme background so it looks like
+    // the new theme expanding (not just a colour blob over the old theme).
+    mask.style.background = isLight
+      ? '#080A10'
+      : 'linear-gradient(135deg,#BAE6FD 0%,#7DD3FC 25%,#93C5FD 50%,#C4B5FD 75%,#F9A8D4 100%)';
+
     const anim = mask.animate(
       [
-        { clipPath: `circle(${maxR}px at ${ox}px ${oy}px)` }, // full-screen cover
-        { clipPath: `circle(0px    at ${ox}px ${oy}px)` }     // shrinks to button
+        { clipPath: `circle(0px    at ${ox}px ${oy}px)` },
+        { clipPath: `circle(${maxR}px at ${ox}px ${oy}px)` }
       ],
-      {
-        duration: 680,
-        easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material Design standard easing
-        fill: 'forwards' // hold final state until we clean up
-      }
+      { duration: 600, easing: 'cubic-bezier(0.4,0,0.2,1)', fill: 'forwards' }
     );
 
     anim.finished
-      .then(() => {
-        // Clean up: cancel the WAAPI fill so CSS takes over (initial clip-path: circle(0px))
-        anim.cancel();
-        mask.style.background = '';
-      })
-      .catch(() => {
-        // Defensive: animation was interrupted — still clean up
-        mask.style.background = '';
-        mask.style.clipPath   = '';
-      })
+      .then(() => anim.cancel())
+      .catch(() => {})
       .finally(() => {
+        mask.style.background = '';
         _themeAnimating = false;
       });
   }
