@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Install Claw Code — the fastest rising harness tool for Claude Code. Rust + Python. 4-step setup guide.">
+<title>Claw Code — Installation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --claw: #FF6B2B;
+    --claw-glow: rgba(255,107,43,0.35);
+    --claw-dim: rgba(255,107,43,0.12);
+    --glass-bg: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.09);
+    --glass-hover: rgba(255,255,255,0.08);
+    --text-primary: #F0EDE8;
+    --text-secondary: rgba(240,237,232,0.55);
+    --text-dim: rgba(240,237,232,0.3);
+    --code-bg: rgba(0,0,0,0.45);
+    --code-border: rgba(255,107,43,0.2);
+    --step-done: #22c55e;
+    --step-done-glow: rgba(34,197,94,0.25);
+    --bg-deep: #080A10;
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── AURORA BACKGROUND ─── */
+  .aurora {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .aurora::before {
+    content: '';
+    position: absolute;
+    width: 900px; height: 600px;
+    top: -200px; left: -200px;
+    background: radial-gradient(ellipse at center, rgba(255,107,43,0.12) 0%, transparent 70%);
+    animation: drift1 18s ease-in-out infinite alternate;
+    border-radius: 50%;
+  }
+  .aurora::after {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    bottom: -100px; right: -100px;
+    background: radial-gradient(ellipse at center, rgba(100,60,200,0.1) 0%, transparent 70%);
+    animation: drift2 22s ease-in-out infinite alternate;
+    border-radius: 50%;
+  }
+  .aurora-mid {
+    position: absolute;
+    width: 500px; height: 500px;
+    top: 40%; left: 50%; transform: translate(-50%,-50%);
+    background: radial-gradient(ellipse at center, rgba(255,107,43,0.06) 0%, transparent 70%);
+    animation: drift3 15s ease-in-out infinite alternate;
+    border-radius: 50%;
+  }
+  @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(80px,60px) scale(1.15); } }
+  @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px,-80px) scale(1.1); } }
+  @keyframes drift3 { from { transform: translate(-50%,-50%) scale(1); } to { transform: translate(-50%,-55%) scale(1.2); } }
+
+  /* noise overlay */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.018;
+    pointer-events: none;
+  }
+
+  /* ─── GRID LINES ─── */
+  .grid-lines {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* ─── LAYOUT ─── */
+  .container {
+    position: relative; z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px 100px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    text-align: center;
+    padding: 80px 0 60px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 16px 6px 10px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--claw);
+    margin-bottom: 28px;
+    backdrop-filter: blur(12px);
+  }
+  .logo-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--claw);
+    box-shadow: 0 0 8px var(--claw);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+  h1 {
+    font-size: clamp(40px, 7vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 18px;
+  }
+  h1 .claw-word {
+    background: linear-gradient(135deg, #FF6B2B 0%, #FF9A5C 50%, #FFBE8A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(255,107,43,0.4));
+  }
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 540px;
+    margin: 0 auto 36px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .stats-row {
+    display: flex; align-items: center; justify-content: center; gap: 28px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    backdrop-filter: blur(8px);
+  }
+  .stat-pill .icon { font-size: 14px; }
+  .stat-pill strong { color: var(--text-primary); }
+
+  /* ─── MAIN GRID ─── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 800px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    position: sticky;
+    top: 32px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .sidebar-glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    backdrop-filter: blur(24px);
+  }
+  .sidebar-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .nav-steps { list-style: none; }
+  .nav-step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent; /* stable baseline — prevents layout shift when active border appears */
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+    font-size: 13px; font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .nav-step:hover { background: var(--glass-hover); color: var(--text-primary); }
+  .nav-step.active { background: var(--claw-dim); color: var(--claw); border: 1px solid rgba(255,107,43,0.2); }
+  .nav-step.done { color: var(--step-done); }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .nav-step.active .step-num {
+    background: var(--claw); border-color: var(--claw);
+    color: white; box-shadow: 0 0 12px var(--claw-glow);
+  }
+  .nav-step.done .step-num {
+    background: var(--step-done); border-color: var(--step-done);
+    color: white; box-shadow: 0 0 10px var(--step-done-glow);
+  }
+
+  .progress-bar-wrap {
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 4px; background: var(--glass-border);
+    border-radius: 100px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--claw), #FFBE8A);
+    box-shadow: 0 0 8px var(--claw-glow);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  /* ─── STEPS CONTENT ─── */
+  .steps-content { animation: fadeUp 0.8s 0.15s ease both; }
+
+  /* ─── OS SELECTOR ─── */
+  .os-selector {
+    display: flex; gap: 8px; margin-bottom: 28px;
+  }
+  .os-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .os-btn:hover { background: var(--glass-hover); color: var(--text-primary); }
+  .os-btn.active {
+    background: var(--claw-dim);
+    border-color: rgba(255,107,43,0.4);
+    color: var(--claw);
+  }
+
+  /* ─── STEP CARD ─── */
+  .step-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(24px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .step-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
+  .step-card.active-card {
+    border-color: rgba(255,107,43,0.3);
+    background: rgba(255,107,43,0.04);
+  }
+  .step-card.active-card::before {
+    background: linear-gradient(90deg, transparent, rgba(255,107,43,0.4), transparent);
+  }
+  .step-card.done-card {
+    border-color: rgba(34,197,94,0.2);
+    background: rgba(34,197,94,0.03);
+  }
+  .step-card.done-card::before {
+    background: linear-gradient(90deg, transparent, rgba(34,197,94,0.3), transparent);
+  }
+  .step-header {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .step-badge {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+    flex-shrink: 0;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    transition: all 0.3s;
+    margin-top: 2px;
+  }
+  .active-card .step-badge {
+    background: var(--claw); border-color: var(--claw);
+    color: white; box-shadow: 0 0 16px var(--claw-glow);
+  }
+  .done-card .step-badge {
+    background: var(--step-done); border-color: var(--step-done);
+    color: white; box-shadow: 0 0 14px var(--step-done-glow);
+  }
+  .step-title-wrap {}
+  .step-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .active-card .step-label { color: rgba(255,107,43,0.7); }
+  .done-card .step-label { color: rgba(34,197,94,0.6); }
+  .step-title {
+    font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  .step-description {
+    font-size: 14px; color: var(--text-secondary); line-height: 1.65;
+    margin-bottom: 20px; font-family: 'Syne', sans-serif;
+    font-weight: 400;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: var(--radius-sm);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--code-border);
+    background: rgba(0,0,0,0.3);
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .code-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-dot:nth-child(1) { background: #ff5f57; }
+  .code-dot:nth-child(2) { background: #ffbd2e; }
+  .code-dot:nth-child(3) { background: #28c840; }
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text-dim);
+    font-weight: 500;
+  }
+  .copy-btn {
+    padding: 4px 12px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .copy-btn:hover { color: var(--text-primary); border-color: rgba(255,255,255,0.2); background: var(--glass-hover); }
+  .copy-btn.copied { color: var(--step-done); border-color: rgba(34,197,94,0.3); }
+  /* base — applies to ALL code elements */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #e2d9c5;
+  }
+  /* block code inside a .code-block container */
+  .code-block code {
+    display: block;
+    padding: 16px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  /* inline code inside prose (info-boxes, checklists, paragraphs) */
+  p code, li code, .check-item code {
+    display: inline;
+    font-size: 12px;
+    background: rgba(255,107,43,0.1);
+    color: var(--claw);
+    border: 1px solid rgba(255,107,43,0.2);
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .token-cmd { color: #FF6B2B; font-weight: 600; }
+  .token-flag { color: #82aaff; }
+  .token-string { color: #c3e88d; }
+  .token-comment { color: var(--text-dim); font-style: italic; }
+  .token-path { color: #ffcb6b; }
+
+  /* ─── INFO / WARNING BOX ─── */
+  .info-box {
+    display: flex; gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    border: 1px solid;
+  }
+  .info-box.tip { background: rgba(130,170,255,0.05); border-color: rgba(130,170,255,0.2); }
+  .info-box.warning { background: rgba(255,190,50,0.05); border-color: rgba(255,190,50,0.2); }
+  .info-box.success { background: rgba(34,197,94,0.05); border-color: rgba(34,197,94,0.2); }
+  .info-box .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .info-box p { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+  .info-box strong { color: var(--text-primary); }
+  .info-box a { color: var(--claw); text-decoration: none; }
+  .info-box a:hover { text-decoration: underline; }
+
+  /* ─── TRACK SELECTOR ─── */
+  .track-cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-bottom: 16px;
+  }
+  .track-card {
+    padding: 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .track-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent);
+    pointer-events: none;
+  }
+  .track-card:hover { background: var(--glass-hover); transform: translateY(-1px); }
+  .track-card.selected-rust { border-color: rgba(255,107,43,0.5); background: var(--claw-dim); }
+  .track-card.selected-python { border-color: rgba(59,130,246,0.5); background: rgba(59,130,246,0.07); }
+  .track-icon { font-size: 28px; margin-bottom: 10px; }
+  .track-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .track-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .track-badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 100px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-top: 8px;
+  }
+  .track-badge.recommended { background: var(--claw-dim); color: var(--claw); border: 1px solid rgba(255,107,43,0.3); }
+  .track-badge.quick { background: rgba(59,130,246,0.1); color: #82aaff; border: 1px solid rgba(59,130,246,0.25); }
+
+  /* ─── COMPLETE BTN ─── */
+  .step-footer {
+    display: flex; justify-content: flex-end; gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+    margin-top: 20px;
+  }
+  .btn-done {
+    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--claw), #FF9A5C);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(255,107,43,0.3);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-done:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(255,107,43,0.45); }
+  .btn-done.completed {
+    background: linear-gradient(135deg, var(--step-done), #4ade80);
+    box-shadow: 0 4px 20px var(--step-done-glow);
+    pointer-events: none;
+  }
+  .btn-secondary {
+    padding: 10px 18px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: var(--glass-hover); color: var(--text-primary); }
+
+  /* ─── FINAL CARD ─── */
+  .final-card {
+    background: linear-gradient(135deg, rgba(255,107,43,0.08), rgba(255,107,43,0.02));
+    border: 1px solid rgba(255,107,43,0.25);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: none;
+    animation: fadeUp 0.6s ease;
+  }
+  .final-card.visible { display: block; }
+  .final-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,107,43,0.6), transparent);
+  }
+  .final-emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: pop 0.5s ease; }
+  @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .final-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.02em; }
+  .final-title span { color: var(--claw); }
+  .final-sub { font-size: 15px; color: var(--text-secondary); max-width: 400px; margin: 0 auto 28px; }
+  .final-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .final-link {
+    padding: 11px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 700;
+    text-decoration: none; display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .final-link.primary {
+    background: linear-gradient(135deg, var(--claw), #FF9A5C);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,107,43,0.3);
+  }
+  .final-link.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(255,107,43,0.5); }
+  .final-link.secondary {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+  }
+  .final-link.secondary:hover { color: var(--text-primary); background: var(--glass-hover); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── CHECKLIST ─── */
+  .check-list { list-style: none; }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--glass-border);
+    font-size: 14px; color: var(--text-secondary);
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-item .chk {
+    width: 18px; height: 18px; border-radius: 5px;
+    border: 1.5px solid var(--glass-border);
+    flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--step-done);
+    background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="aurora-mid"></div>
+</div>
+<div class="grid-lines"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-badge">
+      <span class="dot"></span>
+      Installation Guide
+    </div>
+    <h1>Install <span class="claw-word">Claw Code</span><br>in minutes</h1>
+    <p class="subtitle">Better harness tools that make real things done. Built in Rust with Python support. 153k stars and counting.</p>
+    <div class="stats-row">
+      <div class="stat-pill"><span class="icon">⭐</span> <strong>153k</strong> stars</div>
+      <div class="stat-pill"><span class="icon">🦀</span> Built in <strong>Rust</strong></div>
+      <div class="stat-pill"><span class="icon">🐍</span> Python <strong>7.1%</strong></div>
+      <div class="stat-pill"><span class="icon">⚡</span> Fastest 100k in <strong>history</strong></div>
+    </div>
+  </header>
+
+  <!-- OS SELECTOR -->
+  <div class="os-selector">
+    <button class="os-btn active" onclick="setOS('mac', this)">🍎 macOS</button>
+    <button class="os-btn" onclick="setOS('linux', this)">🐧 Linux</button>
+    <button class="os-btn" onclick="setOS('win', this)">🪟 Windows</button>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar">
+      <div class="sidebar-glass">
+        <div class="sidebar-title">Steps</div>
+        <ul class="nav-steps" id="navSteps">
+          <li class="nav-step active" onclick="scrollToStep(0)">
+            <span class="step-num">1</span> Prerequisites
+          </li>
+          <li class="nav-step" onclick="scrollToStep(1)">
+            <span class="step-num">2</span> Clone Repo
+          </li>
+          <li class="nav-step" onclick="scrollToStep(2)">
+            <span class="step-num">3</span> Choose Track
+          </li>
+          <li class="nav-step" onclick="scrollToStep(3)">
+            <span class="step-num">4</span> Build
+          </li>
+          <li class="nav-step" onclick="scrollToStep(4)">
+            <span class="step-num">5</span> Run & Verify
+          </li>
+        </ul>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">
+            <span>Progress</span>
+            <span id="progressLabel">0 / 5</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- STEPS -->
+    <div class="steps-content" id="stepsContent">
+
+      <!-- STEP 1 -->
+      <div class="step-card active-card" id="step-0">
+        <div class="step-header">
+          <div class="step-badge">1</div>
+          <div class="step-title-wrap">
+            <div class="step-label">Step 01</div>
+            <div class="step-title">Prerequisites</div>
+          </div>
+        </div>
+        <p class="step-description">Claw Code's Rust core requires a Rust toolchain. The Python workspace works standalone. Install what you need for your chosen track.</p>
+
+        <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">For Rust track (recommended)</p>
+
+        <!-- macOS / Linux -->
+        <div data-os="mac linux">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'curl --proto \'=https\' --tlsv1.2 -sSf https://sh.rustup.rs | sh')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Install Rust via rustup</span>
+<span class="token-cmd">curl</span> <span class="token-flag">--proto</span> <span class="token-string">'=https'</span> <span class="token-flag">--tlsv1.2</span> <span class="token-flag">-sSf</span> https://sh.rustup.rs | <span class="token-cmd">sh</span></code>
+          </div>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'source $HOME/.cargo/env\nrustc --version\ncargo --version')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Reload shell, then verify</span>
+<span class="token-cmd">source</span> <span class="token-path">$HOME/.cargo/env</span>
+<span class="token-cmd">rustc</span> <span class="token-flag">--version</span>     <span class="token-comment"># rustc 1.78+</span>
+<span class="token-cmd">cargo</span> <span class="token-flag">--version</span>     <span class="token-comment"># cargo 1.78+</span></code>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div data-os="win" style="display:none">
+          <div class="info-box tip" style="margin-bottom:10px;">
+            <span class="icon">🪟</span>
+            <p>On Windows, install Rust using <strong>winget</strong> (Windows 11/10) or the official GUI installer from <a href="https://rustup.rs" target="_blank">rustup.rs</a>.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">powershell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'winget install Rustlang.Rustup')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Option A — winget (recommended)</span>
+<span class="token-cmd">winget</span> install <span class="token-string">Rustlang.Rustup</span></code>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">powershell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'Invoke-WebRequest -Uri \"https://win.rustup.rs/x86_64\" -OutFile rustup-init.exe\n.\\rustup-init.exe')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Option B — PowerShell installer</span>
+<span class="token-cmd">Invoke-WebRequest</span> <span class="token-flag">-Uri</span> <span class="token-string">"https://win.rustup.rs/x86_64"</span> <span class="token-flag">-OutFile</span> rustup-init.exe
+<span class="token-path">.\rustup-init.exe</span></code>
+          </div>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">powershell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'rustc --version\ncargo --version')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Verify install (new terminal)</span>
+<span class="token-cmd">rustc</span> <span class="token-flag">--version</span>     <span class="token-comment"># rustc 1.78+</span>
+<span class="token-cmd">cargo</span> <span class="token-flag">--version</span>     <span class="token-comment"># cargo 1.78+</span></code>
+          </div>
+        </div>
+
+        <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;margin-top:16px;">For Python track</p>
+
+        <div data-os="mac linux">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'python3 --version')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-cmd">python3</span> <span class="token-flag">--version</span>   <span class="token-comment"># needs Python 3.9+</span></code>
+          </div>
+        </div>
+
+        <div data-os="win" style="display:none">
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">powershell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'winget install Python.Python.3.12\npython --version')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Install Python 3.12 via winget</span>
+<span class="token-cmd">winget</span> install <span class="token-string">Python.Python.3.12</span>
+<span class="token-cmd">python</span> <span class="token-flag">--version</span>   <span class="token-comment"># needs Python 3.9+</span></code>
+          </div>
+        </div>
+
+        <div class="info-box tip">
+          <span class="icon">💡</span>
+          <p>On <strong>Windows</strong>, run all commands in <strong>PowerShell</strong> (not CMD). After installing Rust, restart your terminal so <code>cargo</code> appears on your PATH.</p>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn-done" id="btn-0" onclick="markDone(0)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Mark Complete
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step-card" id="step-1">
+        <div class="step-header">
+          <div class="step-badge">2</div>
+          <div class="step-title-wrap">
+            <div class="step-label">Step 02</div>
+            <div class="step-title">Clone the Repository</div>
+          </div>
+        </div>
+        <p class="step-description">Clone claw-code from GitHub. The repo is temporarily locked during ownership transfer — use the parity mirror for latest updates.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+            <span class="code-lang">shell</span>
+            <button class="copy-btn" onclick="copyCode(this, 'git clone https://github.com/ultraworkers/claw-code.git\ncd claw-code')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy
+            </button>
+          </div>
+          <code><span class="token-cmd">git</span> clone https://github.com/ultraworkers/claw-code.git
+<span class="token-cmd">cd</span> <span class="token-path">claw-code</span></code>
+        </div>
+
+        <div class="info-box warning">
+          <span class="icon">⚠️</span>
+          <p><strong>Ownership transfer in progress.</strong> For the most up-to-date code, use the parity mirror: <a href="https://github.com/ultraworkers/claw-code-parity" target="_blank">ultraworkers/claw-code-parity</a>.</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+            <span class="code-lang">shell</span>
+            <button class="copy-btn" onclick="copyCode(this, '# Alternative: parity mirror (latest)\ngit clone https://github.com/ultraworkers/claw-code-parity.git\ncd claw-code-parity')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy
+            </button>
+          </div>
+          <code><span class="token-comment"># Alternative: parity mirror (latest)</span>
+<span class="token-cmd">git</span> clone https://github.com/ultraworkers/claw-code-parity.git
+<span class="token-cmd">cd</span> <span class="token-path">claw-code-parity</span></code>
+        </div>
+
+        <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;margin-top:4px;">Explore the layout</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+            <span class="code-lang">shell</span>
+            <button class="copy-btn" onclick="copyCode(this, 'ls -la')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy
+            </button>
+          </div>
+          <code><span class="token-cmd">ls</span> <span class="token-flag">-la</span>
+<span class="token-comment"># You'll see:
+#  src/      ← Python workspace
+#  rust/     ← Rust port (claw-cli)
+#  tests/    ← Python test suite
+#  CLAW.md   ← Core docs
+#  README.md ← Full overview</span></code>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn-done" id="btn-1" onclick="markDone(1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Mark Complete
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step-card" id="step-2">
+        <div class="step-header">
+          <div class="step-badge">3</div>
+          <div class="step-title-wrap">
+            <div class="step-label">Step 03</div>
+            <div class="step-title">Choose Your Track</div>
+          </div>
+        </div>
+        <p class="step-description">Claw Code has two implementation surfaces. Choose based on your needs — Rust for full power, Python for quick exploration.</p>
+
+        <div class="track-cards">
+          <div class="track-card selected-rust" id="trackRust" onclick="selectTrack('rust')">
+            <div class="track-icon">🦀</div>
+            <div class="track-name">Rust</div>
+            <div class="track-desc">Full agent harness runtime. Fast, memory-safe, complete feature set with MCP, streaming, and plugin support.</div>
+            <span class="track-badge recommended">Recommended</span>
+          </div>
+          <div class="track-card" id="trackPython" onclick="selectTrack('python')">
+            <div class="track-icon">🐍</div>
+            <div class="track-name">Python</div>
+            <div class="track-desc">Clean-room rewrite. Quick to explore, no compilation needed. Great for studying the architecture.</div>
+            <span class="track-badge quick">Quick start</span>
+          </div>
+        </div>
+
+        <div class="info-box success">
+          <span class="icon">🔥</span>
+          <p>The Rust port (<code>rust/</code>) is the definitive version. It includes the interactive REPL, streaming API client, MCP orchestration, LSP integration, and plugin system.</p>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn-done" id="btn-2" onclick="markDone(2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Mark Complete
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step-card" id="step-3">
+        <div class="step-header">
+          <div class="step-badge">4</div>
+          <div class="step-title-wrap">
+            <div class="step-label">Step 04</div>
+            <div class="step-title">Build</div>
+          </div>
+        </div>
+        <p class="step-description">Build the Rust workspace or set up the Python environment depending on your chosen track.</p>
+
+        <!-- RUST -->
+        <div id="buildRust">
+          <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--claw);opacity:0.8;margin-bottom:10px;">🦀 Rust Track</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'cd rust\ncargo build --release')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-cmd">cd</span> <span class="token-path">rust</span>
+<span class="token-cmd">cargo</span> build <span class="token-flag">--release</span>
+
+<span class="token-comment"># This compiles the full workspace:
+#  crates/api-client    — API + OAuth + streaming
+#  crates/runtime       — session, MCP orchestration
+#  crates/tools         — tool manifest & execution
+#  crates/commands      — slash commands
+#  crates/plugins       — plugin pipeline
+#  crates/claw-cli      — interactive REPL binary
+#  crates/server        — HTTP/SSE server (axum)
+#  crates/lsp           — LSP client integration</span></code>
+          </div>
+          <div class="info-box tip">
+            <span class="icon">⏱️</span>
+            <p>First build takes 2–5 minutes as Cargo downloads and compiles dependencies. Subsequent builds are fast thanks to incremental compilation.</p>
+          </div>
+        </div>
+
+        <!-- PYTHON -->
+        <div id="buildPython" style="display:none;">
+          <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82aaff;opacity:0.8;margin-bottom:10px;">🐍 Python Track</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, '# From repo root — no build step needed!\npython3 -m unittest discover -s tests -v')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># From repo root — no build step needed!</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> unittest discover <span class="token-flag">-s</span> tests <span class="token-flag">-v</span></code>
+          </div>
+          <div class="info-box success">
+            <span class="icon">✨</span>
+            <p>Python track requires <strong>zero compilation</strong>. All tests should pass out of the box with Python 3.9+.</p>
+          </div>
+        </div>
+
+        <div class="step-footer">
+          <button class="btn-done" id="btn-3" onclick="markDone(3)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Mark Complete
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step-card" id="step-4">
+        <div class="step-header">
+          <div class="step-badge">5</div>
+          <div class="step-title-wrap">
+            <div class="step-label">Step 05</div>
+            <div class="step-title">Run & Verify</div>
+          </div>
+        </div>
+        <p class="step-description">Fire up Claw Code and verify everything is working. Below are all the commands you'll use regularly.</p>
+
+        <!-- RUST RUN -->
+        <div id="runRust">
+          <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--claw);opacity:0.8;margin-bottom:10px;">🦀 Rust — Run the binary</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, './target/release/claw-cli')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy
+              </button>
+            </div>
+            <code><span class="token-comment"># Launch interactive REPL</span>
+<span class="token-path">./target/release/claw-cli</span></code>
+          </div>
+          <div class="info-box tip">
+            <span class="icon">🚀</span>
+            <p>The binary is at <code>rust/target/release/claw-cli</code> relative to the repo root. You can also <code>cargo run --release</code> from inside the <code>rust/</code> directory during development.</p>
+          </div>
+        </div>
+
+        <!-- PYTHON RUN -->
+        <div id="runPython" style="display:none;">
+          <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82aaff;opacity:0.8;margin-bottom:10px;">🐍 Python — Core commands</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span></div>
+              <span class="code-lang">shell</span>
+              <button class="copy-btn" onclick="copyCode(this, 'python3 -m src.main summary\npython3 -m src.main manifest\npython3 -m src.main subsystems --limit 16\npython3 -m src.main commands --limit 10\npython3 -m src.main tools --limit 10\npython3 -m src.main parity-audit')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy all
+              </button>
+            </div>
+            <code><span class="token-comment"># Render porting summary</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main summary
+
+<span class="token-comment"># Print current workspace manifest</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main manifest
+
+<span class="token-comment"># List Python modules (limit 16)</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main subsystems <span class="token-flag">--limit</span> 16
+
+<span class="token-comment"># Inspect command inventory</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main commands <span class="token-flag">--limit</span> 10
+
+<span class="token-comment"># Inspect tool inventory</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main tools <span class="token-flag">--limit</span> 10
+
+<span class="token-comment"># Run parity audit (needs local archive)</span>
+<span class="token-cmd">python3</span> <span class="token-flag">-m</span> src.main parity-audit</code>
+          </div>
+        </div>
+
+        <p style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;margin-top:16px;">Verification checklist</p>
+        <ul class="check-list">
+          <li class="check-item"><span class="chk">✓</span> Rust build completes without errors</li>
+          <li class="check-item"><span class="chk">✓</span> <code>python3 -m unittest discover</code> — all tests pass</li>
+          <li class="check-item"><span class="chk">✓</span> <code>src.main summary</code> outputs porting overview</li>
+          <li class="check-item"><span class="chk">✓</span> <code>claw-cli</code> REPL launches and accepts input</li>
+        </ul>
+
+        <div class="step-footer">
+          <button class="btn-done" id="btn-4" onclick="markDone(4)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Finish Setup
+          </button>
+        </div>
+      </div>
+
+      <!-- FINAL CARD -->
+      <div class="final-card" id="finalCard">
+        <span class="final-emoji">🎉</span>
+        <div class="final-title">You're all set, <span>Claw</span> is ready.</div>
+        <p class="final-sub">Join the community, read the docs, and start building with the fastest rising harness tool in history.</p>
+        <div class="final-links">
+          <a href="https://github.com/ultraworkers/claw-code" target="_blank" class="final-link primary">
+            ⭐ Star on GitHub
+          </a>
+          <a href="https://instruct.kr/" target="_blank" class="final-link secondary">
+            💬 Join Discord
+          </a>
+          <a href="https://github.com/ultraworkers/claw-code/blob/main/CLAW.md" target="_blank" class="final-link secondary">
+            📖 CLAW.md Docs
+          </a>
+        </div>
+      </div>
+
+    </div><!-- /steps-content -->
+  </div><!-- /main-grid -->
+</div><!-- /container -->
+
+<script>
+  let currentOS = 'mac';
+  let selectedTrack = 'rust';
+  let completedSteps = new Set();
+  const totalSteps = 5;
+
+  /* ── OS SWITCHING ── */
+  function setOS(os, btn) {
+    currentOS = os;
+    document.querySelectorAll('.os-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Show/hide all elements with data-os attribute
+    document.querySelectorAll('[data-os]').forEach(el => {
+      const oses = el.getAttribute('data-os').split(' ');
+      el.style.display = oses.includes(os) ? '' : 'none';
+    });
+  }
+
+  // Initialize OS display immediately — script runs at end of body so DOM is ready.
+  // data-os="win" elements already have style="display:none" in HTML as safe default;
+  // this pass ensures mac/linux elements are explicitly shown too.
+  document.querySelectorAll('[data-os]').forEach(el => {
+    const oses = el.getAttribute('data-os').split(' ');
+    el.style.display = oses.includes('mac') ? '' : 'none';
+  });
+
+  /* ── TRACK SWITCHING ── */
+  function selectTrack(track) {
+    selectedTrack = track;
+    document.getElementById('trackRust').className = 'track-card' + (track === 'rust' ? ' selected-rust' : '');
+    document.getElementById('trackPython').className = 'track-card' + (track === 'python' ? ' selected-python' : '');
+    document.getElementById('buildRust').style.display = track === 'rust' ? 'block' : 'none';
+    document.getElementById('buildPython').style.display = track === 'python' ? 'block' : 'none';
+    document.getElementById('runRust').style.display = track === 'rust' ? 'block' : 'none';
+    document.getElementById('runPython').style.display = track === 'python' ? 'block' : 'none';
+  }
+
+  /* ── STEP COMPLETION ── */
+  function markDone(index) {
+    completedSteps.add(index);
+    const card = document.getElementById('step-' + index);
+    const btn = document.getElementById('btn-' + index);
+    const badge = card.querySelector('.step-badge');
+
+    card.className = 'step-card done-card';
+    badge.textContent = '✓';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Completed';
+    btn.className = 'btn-done completed';
+
+    updateProgress();
+
+    const nextIndex = index + 1;
+    if (nextIndex < totalSteps) {
+      const nextCard = document.getElementById('step-' + nextIndex);
+      nextCard.className = 'step-card active-card';
+      setNavActive(nextIndex);
+      setTimeout(() => {
+        const y = nextCard.getBoundingClientRect().top + window.pageYOffset - 32;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }, 150);
+    } else {
+      setNavActive(-1); // all done
+      document.getElementById('finalCard').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('finalCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }
+
+  /* ── UNIFIED NAV STATE ── */
+  // Single source of truth for sidebar highlighting.
+  // Pass -1 when all steps are complete.
+  function setNavActive(activeIdx) {
+    document.querySelectorAll('.nav-step').forEach((item, i) => {
+      const num = item.querySelector('.step-num');
+      if (completedSteps.has(i)) {
+        item.className = 'nav-step done';
+        num.textContent = '✓';
+      } else if (i === activeIdx) {
+        item.className = 'nav-step active';
+        num.textContent = i + 1;
+      } else {
+        item.className = 'nav-step';
+        num.textContent = i + 1;
+      }
+    });
+  }
+
+  /* ── PROGRESS BAR ── */
+  function updateProgress() {
+    const count = completedSteps.size;
+    document.getElementById('progressFill').style.width = (count / totalSteps * 100) + '%';
+    document.getElementById('progressLabel').textContent = count + ' / ' + totalSteps;
+  }
+
+  /* ── SCROLL TO STEP (sidebar click) ── */
+  function scrollToStep(index) {
+    const card = document.getElementById('step-' + index);
+    const y = card.getBoundingClientRect().top + window.pageYOffset - 32;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    // Update nav immediately on click — don't wait for observer
+    if (!completedSteps.has(index)) setNavActive(index);
+  }
+
+  /* ── INTERSECTION OBSERVER ── */
+  // rootMargin '-10% 0px -55% 0px' = a step becomes active when
+  // its top enters the upper 45% of the viewport.
+  const observer = new IntersectionObserver((entries) => {
+    // Find the most prominent intersecting entry
+    let best = null;
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        if (!best || entry.intersectionRatio > best.intersectionRatio) best = entry;
+      }
+    });
+    if (best) {
+      const idx = parseInt(best.target.id.replace('step-', ''));
+      if (!isNaN(idx) && !completedSteps.has(idx)) setNavActive(idx);
+    }
+  }, { threshold: [0.1, 0.3, 0.5], rootMargin: '-5% 0px -50% 0px' });
+
+  document.querySelectorAll('.step-card').forEach(c => observer.observe(c));
+
+  /* ── COPY TO CLIPBOARD ── */
+  function copyCode(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!`;
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  /* ── AURORA PARALLAX ── */
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+    const mid = document.querySelector('.aurora-mid');
+    if (mid) mid.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+  });
+</script>
+</body>
+</html>
