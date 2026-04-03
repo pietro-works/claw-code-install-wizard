@@ -581,13 +581,14 @@
     padding: 48px 40px;
     backdrop-filter: blur(24px);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 48px;
+    text-align: center;
+    gap: 32px;
     animation: fadeUp 0.8s 0.3s ease both;
   }
   @media (max-width: 700px) {
-    .author-card { flex-direction: column; text-align: center; padding: 36px 24px; gap: 32px; }
-    .author-card .author-text { align-items: center; }
+    .author-card { padding: 36px 24px; }
   }
   .author-avatar {
     flex-shrink: 0;
@@ -600,7 +601,15 @@
   .author-text {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 14px;
+  }
+  .author-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 460px;
+    text-align: center;
   }
   .author-label {
     font-size: 11px; font-weight: 700;
@@ -619,12 +628,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .author-sub {
-    font-size: 15px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    max-width: 460px;
-  }
+
   .author-cta {
     display: inline-flex;
     align-items: center;
