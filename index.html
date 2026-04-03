@@ -259,7 +259,7 @@
   }
 
   /* ─── STEPS CONTENT ─── */
-  .steps-content { animation: fadeUp 0.8s 0.15s ease both; }
+  .steps-content { animation: fadeUp 0.8s 0.15s ease both; min-width: 0; }
 
   /* ─── OS SELECTOR ─── */
   .os-selector {
@@ -678,9 +678,231 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  /* ─── MOBILE FIXES ─── */
+  @media (max-width: 600px) {
+    .container { padding: 0 14px 80px; }
+    .step-card { padding: 18px 14px 16px; }
+    .author-card { padding: 32px 18px; gap: 24px; }
+    .os-selector { flex-wrap: wrap; }
+    .os-btn { min-width: calc(50% - 4px); }
+    .track-cards { grid-template-columns: 1fr; }
+    .final-card { padding: 28px 18px; }
+  }
+
+  /* ─── THEME TOGGLE BUTTON ─── */
+  #themeToggle {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    z-index: 9999;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #themeToggle:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(0,0,0,0.32); }
+  #themeToggle:active { transform: scale(0.93); }
+  @media (max-width: 600px) {
+    #themeToggle { bottom: 20px; right: 16px; width: 46px; height: 46px; font-size: 19px; }
+  }
+
+  /* ─── THEME TRANSITION MASK ─── */
+  #themeMask {
+    position: fixed; inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    clip-path: circle(0px at center center); /* typed initial state — prevents none→circle() type mismatch */
+    will-change: clip-path;
+  }
+
+  /* ══════════════════════════════════════════
+     LIGHT MODE OVERRIDES
+     All selectors prefixed html[data-theme="light"]
+     Dark mode remains completely untouched.
+  ══════════════════════════════════════════ */
+
+  /* Variables */
+  html[data-theme="light"] {
+    --claw: #0EA5E9;
+    --claw-glow: rgba(14,165,233,0.30);
+    --claw-dim: rgba(14,165,233,0.10);
+    --glass-bg: rgba(255,255,255,0.68);       /* was 0.55 — boosted for card visibility on pastel bg */
+    --glass-border: rgba(14,165,233,0.28);    /* was 0.20 — more visible border */
+    --glass-hover: rgba(255,255,255,0.85);
+    --text-primary: #0C1A2E;
+    --text-secondary: rgba(12,26,46,0.65);
+    --text-dim: rgba(12,26,46,0.40);
+    --code-bg: rgba(224,242,254,0.90);
+    --code-border: rgba(14,165,233,0.22);
+    --step-done: #16A34A;
+    --step-done-glow: rgba(22,163,74,0.25);
+    --bg-deep: #EFF8FF;
+  }
+
+  /* Body background — background-attachment:fixed is broken on iOS Safari, use scroll */
+  html[data-theme="light"] body {
+    background: linear-gradient(135deg, #BAE6FD 0%, #7DD3FC 25%, #93C5FD 50%, #C4B5FD 75%, #F9A8D4 100%);
+    background-attachment: scroll; /* fixed breaks backdrop-filter + iOS Safari rendering */
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  /* Aurora blobs */
+  html[data-theme="light"] .aurora::before {
+    background: radial-gradient(ellipse at center, rgba(236,72,153,0.18) 0%, transparent 70%);
+  }
+  html[data-theme="light"] .aurora::after {
+    background: radial-gradient(ellipse at center, rgba(34,197,94,0.15) 0%, transparent 70%);
+  }
+  html[data-theme="light"] .aurora-mid {
+    background: radial-gradient(ellipse at center, rgba(14,165,233,0.12) 0%, transparent 70%);
+  }
+
+  /* Grid lines */
+  html[data-theme="light"] .grid-lines {
+    background-image:
+      linear-gradient(rgba(14,165,233,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,165,233,0.08) 1px, transparent 1px);
+  }
+
+  /* Scrollbar */
+  html[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(14,165,233,0.25); }
+
+  /* H1 gradient */
+  html[data-theme="light"] h1 .claw-word {
+    background: linear-gradient(135deg, #0EA5E9 0%, #A855F7 50%, #EC4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(14,165,233,0.35));
+  }
+
+  /* Nav active border */
+  html[data-theme="light"] .nav-step.active { border-color: rgba(14,165,233,0.28); }
+
+  /* OS button active */
+  html[data-theme="light"] .os-btn.active { border-color: rgba(14,165,233,0.42); }
+
+  /* Step card shimmer line */
+  html[data-theme="light"] .step-card::before {
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.70), transparent);
+  }
+  /* Active step card */
+  html[data-theme="light"] .step-card.active-card {
+    border-color: rgba(14,165,233,0.35);
+    background: rgba(14,165,233,0.05);
+  }
+  html[data-theme="light"] .step-card.active-card::before {
+    background: linear-gradient(90deg, transparent, rgba(14,165,233,0.45), transparent);
+  }
+  /* Done step card */
+  html[data-theme="light"] .step-card.done-card {
+    border-color: rgba(22,163,74,0.25);
+    background: rgba(22,163,74,0.04);
+  }
+  html[data-theme="light"] .step-card.done-card::before {
+    background: linear-gradient(90deg, transparent, rgba(22,163,74,0.35), transparent);
+  }
+
+  /* Step badge/label states */
+  html[data-theme="light"] .active-card .step-badge { box-shadow: 0 0 16px rgba(14,165,233,0.30); }
+  html[data-theme="light"] .active-card .step-label { color: rgba(14,165,233,0.80); }
+  html[data-theme="light"] .done-card .step-label { color: rgba(22,163,74,0.70); }
+
+  /* Code block */
+  html[data-theme="light"] code { color: #1E3A5F; }
+  html[data-theme="light"] .code-block code { color: #1E3A5F; }
+  html[data-theme="light"] .code-header { background: rgba(14,165,233,0.07); }
+  html[data-theme="light"] .copy-btn:hover { border-color: rgba(14,165,233,0.30); }
+
+  /* Syntax tokens */
+  html[data-theme="light"] .token-cmd    { color: #0284C7; }
+  html[data-theme="light"] .token-flag   { color: #0369A1; }
+  html[data-theme="light"] .token-string { color: #16A34A; }
+  html[data-theme="light"] .token-comment{ color: rgba(12,26,46,0.38); }
+  html[data-theme="light"] .token-path   { color: #7C3AED; }
+
+  /* Inline code */
+  html[data-theme="light"] p code,
+  html[data-theme="light"] li code,
+  html[data-theme="light"] .check-item code {
+    background: rgba(14,165,233,0.10);
+    color: #0369A1;
+    border-color: rgba(14,165,233,0.22);
+  }
+
+  /* Info boxes */
+  html[data-theme="light"] .info-box.tip     { background: rgba(14,165,233,0.06); border-color: rgba(14,165,233,0.22); }
+  html[data-theme="light"] .info-box.warning { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.22); }
+  html[data-theme="light"] .info-box.success { background: rgba(22,163,74,0.06);  border-color: rgba(22,163,74,0.22);  }
+  html[data-theme="light"] .info-box a { color: #0284C7; }
+
+  /* Track cards */
+  html[data-theme="light"] .track-card.selected-rust   { border-color: rgba(14,165,233,0.50); }
+  html[data-theme="light"] .track-card.selected-python { border-color: rgba(236,72,153,0.50); background: rgba(236,72,153,0.07); }
+  html[data-theme="light"] .track-badge.recommended    { border-color: rgba(14,165,233,0.30); }
+  html[data-theme="light"] .track-badge.quick {
+    color: #EC4899;
+    background: rgba(236,72,153,0.10);
+    border-color: rgba(236,72,153,0.25);
+  }
+
+  /* Progress bar */
+  html[data-theme="light"] .progress-fill {
+    background: linear-gradient(90deg, #0EA5E9, #EC4899);
+    box-shadow: 0 0 8px rgba(14,165,233,0.30);
+  }
+
+  /* Primary action button — pink/purple */
+  html[data-theme="light"] .btn-done {
+    background: linear-gradient(135deg, #EC4899, #A855F7);
+    box-shadow: 0 4px 20px rgba(236,72,153,0.30);
+  }
+  html[data-theme="light"] .btn-done:hover { box-shadow: 0 6px 28px rgba(236,72,153,0.45); }
+  html[data-theme="light"] .btn-done.completed {
+    background: linear-gradient(135deg, #16A34A, #4ADE80);
+    box-shadow: 0 4px 20px rgba(22,163,74,0.25);
+  }
+
+  /* Final card */
+  html[data-theme="light"] .final-card {
+    background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(236,72,153,0.05));
+    border-color: rgba(14,165,233,0.28);
+  }
+  html[data-theme="light"] .final-card::before {
+    background: linear-gradient(90deg, transparent, rgba(14,165,233,0.60), rgba(236,72,153,0.55), transparent);
+  }
+  html[data-theme="light"] .final-title span { color: #0EA5E9; }
+  html[data-theme="light"] .final-link.primary {
+    background: linear-gradient(135deg, #EC4899, #A855F7);
+    box-shadow: 0 4px 20px rgba(236,72,153,0.30);
+  }
+  html[data-theme="light"] .final-link.primary:hover { box-shadow: 0 6px 28px rgba(236,72,153,0.50); }
+
+  /* Author card */
+  html[data-theme="light"] .author-avatar { box-shadow: 0 0 40px rgba(14,165,233,0.35); }
+  html[data-theme="light"] .author-heading span {
+    background: linear-gradient(135deg, #0EA5E9 0%, #A855F7 50%, #EC4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 </style>
 </head>
 <body>
+
+<!-- THEME TOGGLE -->
+<button id="themeToggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode">🌙</button>
+<div id="themeMask"></div>
 
 <div class="aurora">
   <div class="aurora-mid"></div>
@@ -1324,6 +1546,78 @@
     const mid = document.querySelector('.aurora-mid');
     if (mid) mid.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
   });
+
+  /* ── THEME TOGGLE (Telegram-style circular mask reveal) ── */
+
+  // Guard: prevent re-triggering while animation is running
+  let _themeAnimating = false;
+
+  function toggleTheme() {
+    if (_themeAnimating) return;
+    _themeAnimating = true;
+
+    const html = document.documentElement;
+    const btn  = document.getElementById('themeToggle');
+    const mask = document.getElementById('themeMask');
+    const isLight = html.dataset.theme === 'light';
+
+    // Origin: centre of the toggle button
+    const rect = btn.getBoundingClientRect();
+    const ox = rect.left + rect.width  / 2;
+    const oy = rect.top  + rect.height / 2;
+
+    // Precise max radius — the farthest screen corner from the button centre.
+    // More reliable than "200vmax" on mobile, and avoids giant GPU allocation.
+    const maxR = Math.hypot(
+      Math.max(ox, window.innerWidth  - ox),
+      Math.max(oy, window.innerHeight - oy)
+    ) + 4; // +4px safety margin so corners are always covered
+
+    // Paint mask with the OUTGOING theme's background so it covers the current page
+    mask.style.background = isLight
+      ? 'linear-gradient(135deg,#BAE6FD 0%,#7DD3FC 25%,#93C5FD 50%,#C4B5FD 75%,#F9A8D4 100%)'
+      : '#080A10';
+
+    // Switch the theme NOW — the new theme renders on the page BENEATH the mask
+    if (isLight) {
+      delete html.dataset.theme;
+      btn.textContent = '🌙';
+    } else {
+      html.dataset.theme = 'light';
+      btn.textContent = '☀️';
+    }
+
+    // --- WAAPI instead of the offsetHeight + CSS transition hack ---
+    // We explicitly declare BOTH keyframes (from and to), so the browser
+    // never needs to read the current computed clip-path state.
+    // This is the only approach that works reliably on iOS Safari & Android Chrome.
+    const anim = mask.animate(
+      [
+        { clipPath: `circle(${maxR}px at ${ox}px ${oy}px)` }, // full-screen cover
+        { clipPath: `circle(0px    at ${ox}px ${oy}px)` }     // shrinks to button
+      ],
+      {
+        duration: 680,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)', // Material Design standard easing
+        fill: 'forwards' // hold final state until we clean up
+      }
+    );
+
+    anim.finished
+      .then(() => {
+        // Clean up: cancel the WAAPI fill so CSS takes over (initial clip-path: circle(0px))
+        anim.cancel();
+        mask.style.background = '';
+      })
+      .catch(() => {
+        // Defensive: animation was interrupted — still clean up
+        mask.style.background = '';
+        mask.style.clipPath   = '';
+      })
+      .finally(() => {
+        _themeAnimating = false;
+      });
+  }
 </script>
 </body>
 </html>
